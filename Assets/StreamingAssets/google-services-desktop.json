@@ -1,0 +1,37 @@
+{
+  "client": [
+    {
+      "services": {
+        "appinvite_service": {
+          "status": 1
+        }, 
+        "analytics_service": {
+          "status": 0
+        }
+      }, 
+      "oauth_client": [
+        {
+          "client_id": "448282231129-oc8qvm68mm4ibp5nnm6uftvfqbf6b3tc.apps.googleusercontent.com"
+        }
+      ], 
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-6LJACu20zJ5OZbx0xAR1EzqLQpJcLlw"
+        }
+      ], 
+      "client_info": {
+        "mobilesdk_app_id": "1:448282231129:ios:3aa7840793d05b8efc8c48", 
+        "android_client_info": {
+          "package_name": "com.magiclampgames.jetmouse"
+        }
+      }
+    }
+  ], 
+  "configuration_version": "1", 
+  "project_info": {
+    "storage_bucket": "mercury-boy-74261468.appspot.com", 
+    "project_id": "mercury-boy-74261468", 
+    "firebase_url": "https://mercury-boy-74261468.firebaseio.com", 
+    "project_number": "448282231129"
+  }
+}
