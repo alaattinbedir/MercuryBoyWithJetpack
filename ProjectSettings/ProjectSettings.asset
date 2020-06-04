@@ -126,7 +126,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.6.1
+  bundleVersion: 1.4.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -176,7 +176,7 @@ PlayerSettings:
     iPhone: com.magiclampgames.jetmouse
     tvOS: com.magiclampgames.jetmouse
   buildNumber:
-    iPhone: 4
+    iPhone: 2
   AndroidBundleVersionCode: 34
   AndroidMinSdkVersion: 19
   AndroidTargetSdkVersion: 0
