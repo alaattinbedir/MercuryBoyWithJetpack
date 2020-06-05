@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
-using GooglePlayGames;
-using GooglePlayGames.BasicApi;
-using GooglePlayGames.BasicApi.Multiplayer;
+//using GooglePlayGames;
+//using GooglePlayGames.BasicApi;
+//using GooglePlayGames.BasicApi.Multiplayer;
 
 
 public class GameData {

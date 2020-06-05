@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
 using UnityEngine.SocialPlatforms;
-using GooglePlayGames;
+//using GooglePlayGames;
 using UnityEngine.SceneManagement;
 
 
@@ -136,9 +136,9 @@ public class MouseController : MonoBehaviour {
 #endif
 #if UNITY_ANDROID
 		// recommended for debugging:
-		PlayGamesPlatform.DebugLogEnabled = true;
+		//PlayGamesPlatform.DebugLogEnabled = true;
 		// Activate the Google Play Games platform
-		PlayGamesPlatform.Activate ();
+		//PlayGamesPlatform.Activate ();
 
 		LogIn();
 
@@ -196,7 +196,7 @@ public class MouseController : MonoBehaviour {
 #endif
 #if UNITY_ANDROID
 
-		((PlayGamesPlatform)Social.Active).ShowAchievementsUI (); 
+		//((PlayGamesPlatform)Social.Active).ShowAchievementsUI (); 
 		//        Social.ShowLeaderboardUI (); 
 #endif
 
@@ -316,9 +316,9 @@ public class MouseController : MonoBehaviour {
 
 #if UNITY_ANDROID
 		if (Input.GetKeyDown(KeyCode.Escape)) {
-			if (HeyzapAds.OnBackPressed())
-				return;
-			else
+			//if (HeyzapAds.OnBackPressed())
+			//	return;
+			//else
 				BackButtonClicked ();
 		}
 #endif
