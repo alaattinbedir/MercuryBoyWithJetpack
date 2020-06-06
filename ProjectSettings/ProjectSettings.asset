@@ -176,7 +176,7 @@ PlayerSettings:
     iPhone: com.magiclampgames.jetmouse
     tvOS: com.magiclampgames.jetmouse
   buildNumber:
-    iPhone: 2
+    iPhone: 1
   AndroidBundleVersionCode: 41
   AndroidMinSdkVersion: 21
   AndroidTargetSdkVersion: 0

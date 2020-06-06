@@ -6,6 +6,8 @@ using System.Threading;
 using UnityEngine.SocialPlatforms;
 //using GooglePlayGames;
 using UnityEngine.SceneManagement;
+using GoogleMobileAds.Api;
+using System;
 
 
 #if UNITY_IOS
@@ -13,8 +15,11 @@ using UnityEngine.SocialPlatforms.GameCenter;
 #endif
 
 
+
 public class MouseController : MonoBehaviour {
 
+	private InterstitialAd interstitial;
+	private RewardedAd rewardedAd;
 	private bool GOD_MODE = false;
 	public float jetpackForce;
 	public float forwardMovementSpeed;
@@ -124,6 +129,9 @@ public class MouseController : MonoBehaviour {
 			.SetEventCategory("app_action")
 			.SetEventAction("launch")
 			.SetEventLabel("launched"));
+
+
+		MobileAds.Initialize(initStatus => { });
 
 #if UNITY_IPHONE
 
@@ -241,7 +249,7 @@ public class MouseController : MonoBehaviour {
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		distance = 0;
-		textHighDistance.text = PlayerPrefs.GetInt("highscore", 0).ToString(); 
+		textHighDistance.text = PlayerPrefs.GetInt("highscore", 0).ToString();
 
 		//HZIncentivizedAd.AdDisplayListener listener = delegate(string adState, string adTag){
 		//	if ( adState.Equals("incentivized_result_complete") ) {
@@ -253,11 +261,127 @@ public class MouseController : MonoBehaviour {
 		//};
 
 		//HZIncentivizedAd.SetDisplayListener(listener);
-
-
-
+		RequestInterstitial();
+		CreateAndLoadRewardedAd();
 		SetSoundAndMusic ();
 		OnMenu ();
+	}
+
+	public void CreateAndLoadRewardedAd()
+	{
+		//// Test
+		//#if UNITY_ANDROID
+		//            string adUnitId = "ca-app-pub-3940256099942544/5224354917";
+		//#elif UNITY_IPHONE
+		//		string adUnitId = "ca-app-pub-3940256099942544/1712485313";
+		//#else
+		//            string adUnitId = "unexpected_platform";
+		//#endif
+
+#if UNITY_ANDROID
+            string adUnitId = "ca-app-pub-7610769761173728/9356844697";
+#elif UNITY_IPHONE
+		string adUnitId = "ca-app-pub-7610769761173728/1973178698";
+#else
+            string adUnitId = "unexpected_platform";
+#endif
+
+		this.rewardedAd = new RewardedAd(adUnitId);
+
+		this.rewardedAd.OnAdLoaded += HandleRewardedAdLoaded;
+		this.rewardedAd.OnUserEarnedReward += HandleUserEarnedReward;
+		this.rewardedAd.OnAdClosed += HandleRewardedAdClosed;
+
+		// Create an empty ad request.
+		AdRequest request = new AdRequest.Builder().Build();
+		// Load the rewarded ad with the request.
+		this.rewardedAd.LoadAd(request);
+	}
+
+	public void HandleRewardedAdLoaded(object sender, EventArgs args)
+	{
+		MonoBehaviour.print("HandleRewardedAdLoaded event received");
+	}
+
+	public void HandleRewardedAdFailedToLoad(object sender, AdErrorEventArgs args)
+	{
+		MonoBehaviour.print(
+			"HandleRewardedAdFailedToLoad event received with message: "
+							 + args.Message);
+	}
+
+	public void HandleRewardedAdOpening(object sender, EventArgs args)
+	{
+		MonoBehaviour.print("HandleRewardedAdOpening event received");
+	}
+
+	public void HandleRewardedAdFailedToShow(object sender, AdErrorEventArgs args)
+	{
+		MonoBehaviour.print(
+			"HandleRewardedAdFailedToShow event received with message: "
+							 + args.Message);
+	}
+
+	public void HandleRewardedAdClosed(object sender, EventArgs args)
+	{
+		MonoBehaviour.print("HandleRewardedAdClosed event received");
+		this.CreateAndLoadRewardedAd();
+	}
+
+	public void HandleUserEarnedReward(object sender, Reward args)
+	{
+		string type = args.Type;
+		double amount = args.Amount;
+		MonoBehaviour.print(
+			"HandleRewardedAdRewarded event received for "
+						+ amount.ToString() + " " + type);
+
+        CallbackIncentivizedAd();
+	}
+
+	private void RequestInterstitial()
+	{
+		if (this.interstitial != null)
+        {
+			this.interstitial.Destroy();
+        }
+
+        //// Test ortami
+        //#if UNITY_ANDROID
+        //        string adUnitId = "ca-app-pub-3940256099942544/1033173712";
+        //#elif UNITY_IPHONE
+        //		string adUnitId = "ca-app-pub-3940256099942544/4411468910";
+        //#else
+        //        string adUnitId = "unexpected_platform";
+        //#endif
+
+        //PROD ortami
+#if UNITY_ANDROID
+        string adUnitId = "ca-app-pub-7610769761173728/6403378295";
+#elif UNITY_IPHONE
+        string adUnitId = "ca-app-pub-7610769761173728/2112779498";
+#else
+        string adUnitId = "unexpected_platform";
+#endif
+
+        // Initialize an InterstitialAd.
+        this.interstitial = new InterstitialAd(adUnitId);
+
+		// Called when an ad request has successfully loaded.
+		this.interstitial.OnAdLoaded += HandleOnAdLoaded;
+		// Called when an ad request failed to load.
+		this.interstitial.OnAdFailedToLoad += HandleOnAdFailedToLoad;
+		// Called when an ad is shown.
+		this.interstitial.OnAdOpening += HandleOnAdOpened;
+		// Called when the ad is closed.
+		this.interstitial.OnAdClosed += HandleOnAdClosed;
+		// Called when the ad click caused the user to leave the application.
+		this.interstitial.OnAdLeavingApplication += HandleOnAdLeavingApplication;
+
+		// Create an empty ad request.
+		AdRequest request = new AdRequest.Builder().Build();
+		// Load the interstitial with the request.
+		this.interstitial.LoadAd(request);
 	}
 
 	// This function gets called when Authenticate completes
@@ -286,7 +410,32 @@ public class MouseController : MonoBehaviour {
 			Debug.Log ("Got " + achievements.Length + " achievements");
 	}
 
+	public void HandleOnAdLoaded(object sender, EventArgs args)
+	{
+		MonoBehaviour.print("HandleAdLoaded event received");
+	}
 
+	public void HandleOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs args)
+	{
+		MonoBehaviour.print("HandleFailedToReceiveAd event received with message: "
+							+ args.Message);
+	}
+
+	public void HandleOnAdOpened(object sender, EventArgs args)
+	{
+		MonoBehaviour.print("HandleAdOpened event received");
+	}
+
+	public void HandleOnAdClosed(object sender, EventArgs args)
+	{
+		MonoBehaviour.print("HandleAdClosed event received");
+        RequestInterstitial();
+	}
+
+	public void HandleOnAdLeavingApplication(object sender, EventArgs args)
+	{
+		MonoBehaviour.print("HandleAdLeavingApplication event received");
+	}
 
 	public void BackButtonClicked()
 	{
@@ -781,6 +930,12 @@ public class MouseController : MonoBehaviour {
 		if (GameData.Instance.isSoundON != 0)
 			SoundManager.instance.PlaySingle(menuSelect);
 
+		if (this.interstitial.IsLoaded())
+		{
+			SoundManager.instance.StopMusic();
+			this.interstitial.Show();
+		}
+
 		//if (HZInterstitialAd.IsAvailable()) {
 		//	SoundManager.instance.StopMusic ();
 		//	GameData.Instance.counter++;
@@ -791,16 +946,16 @@ public class MouseController : MonoBehaviour {
 		//	}
 		//}
 
-//		googleAnalytics.LogEvent(new EventHitBuilder()
-//			.SetEventCategory("game_action")
-//			.SetEventAction("game_started")
-//			.SetEventLabel("restart"));
-//
-//		googleAnalytics.LogEvent(new EventHitBuilder()
-//			.SetEventCategory("game_action")
-//			.SetEventAction("video")
-//			.SetEventLabel("intersititial_video"));
-		
+		//		googleAnalytics.LogEvent(new EventHitBuilder()
+		//			.SetEventCategory("game_action")
+		//			.SetEventAction("game_started")
+		//			.SetEventLabel("restart"));
+		//
+		//		googleAnalytics.LogEvent(new EventHitBuilder()
+		//			.SetEventCategory("game_action")
+		//			.SetEventAction("video")
+		//			.SetEventLabel("intersititial_video"));
+
 		//		SceneManager.LoadScene(Application.loadedLevelName, LoadSceneMode.Single);
 		Application.LoadLevel (Application.loadedLevelName);
 	}
@@ -1089,7 +1244,20 @@ public class MouseController : MonoBehaviour {
 
 			if (GameData.Instance.isSoundON != 0)
 				SoundManager.instance.PlaySingle (menuSelect);
-		
+
+
+			if (this.rewardedAd.IsLoaded())
+			{
+				SoundManager.instance.StopMusic();
+				this.rewardedAd.Show();
+            }
+            else
+            {
+				string message = "Rewarded video is not available at this time";
+				dialogueManager = DialogueManager.Instance();
+				dialogueManager.showDialog("Info", message, 100);
+			}
+
 			//if (HZIncentivizedAd.IsAvailable ()) {
 			//	SoundManager.instance.StopMusic ();
 
@@ -1097,9 +1265,9 @@ public class MouseController : MonoBehaviour {
 			//	HZIncentivizedAd.Fetch ();
 			//} else {
 
-				string message = "Rewarded video is not available at this time";
-				dialogueManager = DialogueManager.Instance ();
-				dialogueManager.showDialog ("Info", message, 100);
+			//string message = "Rewarded video is not available at this time";
+			//	dialogueManager = DialogueManager.Instance ();
+			//	dialogueManager.showDialog ("Info", message, 100);
 
 			//}
 		} else {
