@@ -98,7 +98,7 @@ public class TooltipDrawer : PropertyDrawer
 
   public override void OnGUI(Rect position, SerializedProperty property, GUIContent tooltipContent) {
     var atr = (TooltipAttribute) attribute;
-    var content = new GUIContent(tooltipContent.text, atr.text);
+    var content = new GUIContent(tooltipContent.text, atr.tooltip);
     EditorGUI.PropertyField(position, property, content);
   }
 

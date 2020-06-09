@@ -121,15 +121,16 @@ public class MouseController : MonoBehaviour {
 
 	public AudioClip menuSelect;
 	public AudioClip backgroudMusic;
-	public GoogleAnalyticsV4 googleAnalytics;
+	
 
 	void Awake(){
 
-		googleAnalytics.LogEvent(new EventHitBuilder()
-			.SetEventCategory("app_action")
-			.SetEventAction("launch")
-			.SetEventLabel("launched"));
-
+		Firebase.Analytics.FirebaseAnalytics
+  .LogEvent(
+	Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+	Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+	"launch"
+  );
 
 		MobileAds.Initialize(initStatus => { });
 
@@ -165,10 +166,13 @@ public class MouseController : MonoBehaviour {
 			Social.localUser.Authenticate ((bool success) => {
 				if (success) {
 					Debug.Log ("Login Sucess");
-					googleAnalytics.LogEvent (new EventHitBuilder ()
-						.SetEventCategory ("game_action")
-						.SetEventAction ("login")
-						.SetEventLabel ("android_login"));
+
+					Firebase.Analytics.FirebaseAnalytics
+					  .LogEvent(
+						Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+						Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+						"android_login"
+					  );
 				} else {
 					Debug.Log ("Login failed");
 				}
@@ -230,11 +234,13 @@ public class MouseController : MonoBehaviour {
 
 	void CallbackIncentivizedAd(){
 		// The user has watched the entire video and should be given a reward.
-		googleAnalytics.LogEvent(new EventHitBuilder()
-			.SetEventCategory("game_action")
-			.SetEventAction("video")
-			.SetEventLabel("rewarded_video"));
-
+		Firebase.Analytics.FirebaseAnalytics
+		  .LogEvent(
+			Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+			Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+			"rewarded_video"
+		  );
+		
 		textContinue.gameObject.SetActive (true);
 
 
@@ -390,10 +396,12 @@ public class MouseController : MonoBehaviour {
 		if (success) {
 			Debug.Log ("Authenticated, checking achievements");
 
-			googleAnalytics.LogEvent (new EventHitBuilder ()
-				.SetEventCategory ("game_action")
-				.SetEventAction ("login")
-				.SetEventLabel ("ios_login"));
+			Firebase.Analytics.FirebaseAnalytics
+			  .LogEvent(
+				Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+				Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+				"ios_login"
+			  );
 
 			// Request loaded achievements, and register a callback for processing them
 			Social.LoadAchievements (ProcessLoadedAchievements);
@@ -439,10 +447,12 @@ public class MouseController : MonoBehaviour {
 
 	public void BackButtonClicked()
 	{
-		googleAnalytics.LogEvent (new EventHitBuilder ()
-			.SetEventCategory ("app_action")
-			.SetEventAction ("exit")
-			.SetEventLabel ("android_exit"));
+		Firebase.Analytics.FirebaseAnalytics
+			  .LogEvent(
+				Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+				Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+				"android_exit"
+			  );
 
 		Application.Quit();
 	}
@@ -832,12 +842,12 @@ public class MouseController : MonoBehaviour {
 	}
 
 	public void StartNewGame(){
-
-		googleAnalytics.LogEvent(new EventHitBuilder()
-			.SetEventCategory("game_action")
-			.SetEventAction("game_started")
-			.SetEventLabel("start"));
-
+		Firebase.Analytics.FirebaseAnalytics
+  .LogEvent(
+	Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+	Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+	"start_new_game"
+  );
 		lifeCount = 3;
 		speed = 50;
 		forwardMovementSpeed = 4.0f;
@@ -849,11 +859,13 @@ public class MouseController : MonoBehaviour {
 
 	public void ContinueGame(){
 
-		googleAnalytics.LogEvent(new EventHitBuilder()
-			.SetEventCategory("game_action")
-			.SetEventAction("game_started")
-			.SetEventLabel("continue"));
-
+		Firebase.Analytics.FirebaseAnalytics
+  .LogEvent(
+	Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+	Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+	"continue"
+  );
+		
 	}
 
 
@@ -934,28 +946,22 @@ public class MouseController : MonoBehaviour {
 		{
 			SoundManager.instance.StopMusic();
 			this.interstitial.Show();
+			Firebase.Analytics.FirebaseAnalytics
+  .LogEvent(
+	Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+	Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+	"intersititial_video"
+  );
 		}
 
-		//if (HZInterstitialAd.IsAvailable()) {
-		//	SoundManager.instance.StopMusic ();
-		//	GameData.Instance.counter++;
 
-		//	if(GameData.Instance.counter % 2 == 0){
-		//		HZInterstitialAd.Show ();
-		//		HZInterstitialAd.Fetch ();
-		//	}
-		//}
-
-		//		googleAnalytics.LogEvent(new EventHitBuilder()
-		//			.SetEventCategory("game_action")
-		//			.SetEventAction("game_started")
-		//			.SetEventLabel("restart"));
-		//
-		//		googleAnalytics.LogEvent(new EventHitBuilder()
-		//			.SetEventCategory("game_action")
-		//			.SetEventAction("video")
-		//			.SetEventLabel("intersititial_video"));
-
+		Firebase.Analytics.FirebaseAnalytics
+  .LogEvent(
+	Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+	Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+	"game_restart"
+  );
+		
 		//		SceneManager.LoadScene(Application.loadedLevelName, LoadSceneMode.Single);
 		Application.LoadLevel (Application.loadedLevelName);
 	}

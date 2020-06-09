@@ -15,7 +15,7 @@ public class ModalPanel : MonoBehaviour {
 	public Button noButton;
 	public Button okButton;
 	public GameObject modalPanelObject;
-	public GoogleAnalyticsV4 googleAnalytics;
+	
 
 	private static ModalPanel modalPanel;
 	
@@ -135,29 +135,25 @@ public class ModalPanel : MonoBehaviour {
 		yield return new WaitForSeconds(time);
 		
 		// Code to execute after the delay
-		if(GameData.Instance.noAd != 99)
-			showHZAdVideos ();
+		// not used anymore because of add policy
+		//if(GameData.Instance.noAd != 99)
+			//showHZAdVideos ();
 	}
 
 	public void showHZAdVideos(){
-		
-		googleAnalytics.LogEvent(new EventHitBuilder()
-			.SetEventCategory("game_action")
-			.SetEventAction("heyzap_advideos")
-			.SetEventLabel("video"));
 
 		//if (HZIncentivizedAd.IsAvailable ()) {
-		//	HZIncentivizedAd.Show ();
+		//	HZIncentivizedAd.Shoglew ();
 		//}
 
 		//HZIncentivizedAd.Fetch ();
 
-//		// Later, such as after a level is completed
-//		if (HZVideoAd.IsAvailable()) {
-//			HZVideoAd.Show();
-//			HZVideoAd.Fetch();
-//		}
-		
+		//		// Later, such as after a level is completed
+		//		if (HZVideoAd.IsAvailable()) {
+		//			HZVideoAd.Show();
+		//			HZVideoAd.Fetch();
+		//		}
+
 	}
 
 	// Yes/No/Cancelwith a Yes event, a No event 
