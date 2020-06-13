@@ -4,4 +4,5 @@
           android:versionCode="1"
           android:versionName="1.0">
   <uses-sdk android:minSdkVersion="14"/>
+  <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-7610769761173728~4926645091" />
 </manifest>

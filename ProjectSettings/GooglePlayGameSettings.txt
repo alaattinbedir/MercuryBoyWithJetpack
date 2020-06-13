@@ -1,5 +1,5 @@
-lastUpgrade=00938a
-proj.pluginVersion=0.9.38a
+lastUpgrade=01009
+proj.pluginVersion=0.10.09
 proj.AppId=448282231129
 and.BundleId=com.magiclampgames.jetmouse
 proj.classDir=Assets

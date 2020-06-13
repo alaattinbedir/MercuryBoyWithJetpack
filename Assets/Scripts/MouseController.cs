@@ -1,19 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
 using System.Threading;
-using UnityEngine.SocialPlatforms;
-//using GooglePlayGames;
-using UnityEngine.SceneManagement;
 using GoogleMobileAds.Api;
-using System;
-
+using GooglePlayGames;
+using UnityEngine;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.UI;
 
 #if UNITY_IOS
 using UnityEngine.SocialPlatforms.GameCenter;
 #endif
-
 
 
 public class MouseController : MonoBehaviour {
@@ -27,13 +22,12 @@ public class MouseController : MonoBehaviour {
 	public Transform groundCheckTransform;
 	private DialogueManager dialogueManager;
 	private bool grounded;
-
 	public LayerMask groundCheckLayerMask;
 
 	Animator animator;
 	public ParticleSystem jetpack;
-
 	private bool dead = false;
+	private bool loggedIn = false;
 	private bool gameOver = false;
 	private bool paused = false;
 	private uint coins = 0;
@@ -125,14 +119,7 @@ public class MouseController : MonoBehaviour {
 
 	void Awake(){
 
-		Firebase.Analytics.FirebaseAnalytics
-  .LogEvent(
-	Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
-	Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
-	"launch"
-  );
-
-		MobileAds.Initialize(initStatus => { });
+        MobileAds.Initialize(initStatus => { });
 
 #if UNITY_IPHONE
 
@@ -144,41 +131,72 @@ public class MouseController : MonoBehaviour {
 
 #endif
 #if UNITY_ANDROID
-		// recommended for debugging:
-		//PlayGamesPlatform.DebugLogEnabled = true;
-		// Activate the Google Play Games platform
-		//PlayGamesPlatform.Activate ();
+        // recommended for debugging:
+  //      PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder()
+		//// enables saving game progress.
+		//.EnableSavedGames()
+		//.RequestServerAuthCode(false)
+		//// requests an ID token be generated.  This OAuth token can be used to
+		////  identify the player to other services such as Firebase.
+		//.RequestIdToken()
+		//.Build();
 
-		LogIn();
+		//PlayGamesPlatform.InitializeInstance(config);
+
+		PlayGamesPlatform.DebugLogEnabled = true;
+        // Activate the Google Play Games platform
+        PlayGamesPlatform.Activate();
+
+        LogIn();
 
 #endif
 
-		//HZIncentivizedAd.Fetch();
-		//HZVideoAd.Fetch();
-
-//		HeyzapAds.ShowMediationTestSuite();
-
 	}
 
-	public void LogIn ()
+	
+	
+
+
+public void LogIn ()
 	{
-		if (!Social.localUser.authenticated) {
-			Social.localUser.Authenticate ((bool success) => {
-				if (success) {
-					Debug.Log ("Login Sucess");
 
-					Firebase.Analytics.FirebaseAnalytics
-					  .LogEvent(
-						Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
-						Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
-						"android_login"
-					  );
-				} else {
-					Debug.Log ("Login failed");
+		if (loggedIn == true)
+        {
+			return;
+        }
+        //// authenticate user:
+  //      PlayGamesPlatform.Instance.Authenticate(SignInInteractivity.CanPromptOnce, (result) =>
+  //      {
+  //          //	// handle results
+
+
+  //          Firebase.Analytics.FirebaseAnalytics
+		//			  .LogEvent(
+		//				Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+		//				Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+		//				"android_login"
+		//			  );
+		//});
+
+        if (!Social.localUser.authenticated)
+        {
+            Social.localUser.Authenticate((bool success) =>
+            {
+                if (success)
+                {
+                    Debug.Log("Login Sucess");
+
+					loggedIn = true;
+
 				}
-			});
-		}
-	}
+                else
+                {
+                    Debug.Log("Login failed");
+					loggedIn = false;
+				}
+            });
+        }
+    }
 
 	public void OnNoAdvertisement(){
 		if (GameData.Instance.isSoundON != 0)
@@ -208,11 +226,10 @@ public class MouseController : MonoBehaviour {
 #endif
 #if UNITY_ANDROID
 
-		//((PlayGamesPlatform)Social.Active).ShowAchievementsUI (); 
-		//        Social.ShowLeaderboardUI (); 
+        ((PlayGamesPlatform)Social.Active).ShowAchievementsUI();
 #endif
 
-	}
+    }
 
 	public void OnShowLeaderBoard ()
 	{
@@ -257,20 +274,23 @@ public class MouseController : MonoBehaviour {
 		distance = 0;
 		textHighDistance.text = PlayerPrefs.GetInt("highscore", 0).ToString();
 
-		//HZIncentivizedAd.AdDisplayListener listener = delegate(string adState, string adTag){
-		//	if ( adState.Equals("incentivized_result_complete") ) {
-		//		CallbackIncentivizedAd();
-		//	}
-		//	if ( adState.Equals("incentivized_result_incomplete") ) {
-		//		// The user did not watch the entire video and should not be given a   reward.
-		//	}
-		//};
+		Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
+		Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
 
-		//HZIncentivizedAd.SetDisplayListener(listener);
 		RequestInterstitial();
 		CreateAndLoadRewardedAd();
 		SetSoundAndMusic ();
 		OnMenu ();
+	}
+
+	public void OnTokenReceived(object sender, Firebase.Messaging.TokenReceivedEventArgs token)
+	{
+		UnityEngine.Debug.Log("Received Registration Token: " + token.Token);
+	}
+
+	public void OnMessageReceived(object sender, Firebase.Messaging.MessageReceivedEventArgs e)
+	{
+		UnityEngine.Debug.Log("Received a new message from: " + e.Message.From);
 	}
 
 	public void CreateAndLoadRewardedAd()
@@ -489,11 +509,12 @@ public class MouseController : MonoBehaviour {
 	void ReportAchivement(string achivementID){
 		// You can also call into the functions like this
 
-		Social.ReportProgress (achivementID, 100.0f, result => {
-			if (result)
-				Debug.Log ("Successfully reported achievement progress");
+		Social.ReportProgress(achivementID, 100.0f, (bool success) => {
+			// handle success or failure
+			if (success)
+				Debug.Log("Successfully reported achievement progress");
 			else
-				Debug.Log ("Failed to report achievement");
+				Debug.Log("Failed to report achievement");
 		});
 	}
 
