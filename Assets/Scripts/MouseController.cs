@@ -963,25 +963,27 @@ public void LogIn ()
 		if (GameData.Instance.isSoundON != 0)
 			SoundManager.instance.PlaySingle(menuSelect);
 
-		if (this.interstitial.IsLoaded())
+		if (lifeCount == 0)
 		{
-			SoundManager.instance.StopMusic();
-			this.interstitial.Show();
-			Firebase.Analytics.FirebaseAnalytics
-  .LogEvent(
-	Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
-	Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
-	"intersititial_video"
-  );
+			if (this.interstitial.IsLoaded())
+			{
+				SoundManager.instance.StopMusic();
+				this.interstitial.Show();
+						Firebase.Analytics.FirebaseAnalytics
+						.LogEvent(
+						Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+						Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+						"intersititial_video"
+			  );
+			}
 		}
 
-
 		Firebase.Analytics.FirebaseAnalytics
-  .LogEvent(
-	Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
-	Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
-	"game_restart"
-  );
+		  .LogEvent(
+			Firebase.Analytics.FirebaseAnalytics.EventJoinGroup,
+			Firebase.Analytics.FirebaseAnalytics.ParameterGroupId,
+			"game_restart"
+		  );
 		
 		//		SceneManager.LoadScene(Application.loadedLevelName, LoadSceneMode.Single);
 		Application.LoadLevel (Application.loadedLevelName);
