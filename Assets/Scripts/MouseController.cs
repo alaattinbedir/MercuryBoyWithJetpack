@@ -32,7 +32,7 @@ public class MouseController : MonoBehaviour {
 	private bool paused = false;
 	private uint coins = 0;
 	private uint speed = 50;
-	private uint lifeCount = 3;
+	private uint lifeCount = 1;
 
 
 	public Texture2D coinIconTexture;
@@ -203,15 +203,15 @@ public void LogIn ()
 			SoundManager.instance.PlaySingle(menuSelect);
 
 
-#if UNITY_ANDROID
-        Application.OpenURL("https://play.google.com/store/apps/details?id=com.magiclampgames.NumberGame2");
-#elif UNITY_IPHONE
-        Application.OpenURL("https://itunes.apple.com/us/app/mastermind-numbers-the-best-iq-puzzle-game/id1000344141");
-#endif
+//#if UNITY_ANDROID
+//        Application.OpenURL("https://play.google.com/store/apps/details?id=com.magiclampgames.NumberGame2");
+//#elif UNITY_IPHONE
+//        Application.OpenURL("https://itunes.apple.com/us/app/mastermind-numbers-the-best-iq-puzzle-game/id1000344141");
+//#endif
 
-        //string message = "No Ad functionality is not available for this version";
-        //dialogueManager = DialogueManager.Instance ();
-        //dialogueManager.showDialog ("Info",message, 100);
+        string message = "No Ad functionality is not available for this version";
+        dialogueManager = DialogueManager.Instance();
+        dialogueManager.showDialog("Info", message, 100);
 
     }
 
@@ -1300,7 +1300,7 @@ public void LogIn ()
 
 			//}
 		} else {
-			string message = "You don't have enough life to continue. Please restart game.";
+			string message = "Rewarded video cannot be used to continue.";
 			dialogueManager = DialogueManager.Instance ();
 			dialogueManager.showDialog ("Info", message, 100);
 		}
